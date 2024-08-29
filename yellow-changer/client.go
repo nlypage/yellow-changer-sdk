@@ -5,9 +5,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/nlypage/yellow-changer/yellow-changer/common"
 	"io"
 	"net/http"
-	"nlypage/yellow-changer/yellow-changer/common"
 	"time"
 )
 
