@@ -3,6 +3,7 @@ package yellowChanger
 import (
 	"context"
 	"encoding/json"
+	"github.com/nlypage/yellow-changer-sdk/yellow-changer/common/errorz"
 	"net/http"
 )
 
@@ -13,10 +14,10 @@ type withdrawNetwork struct {
 }
 
 type Rate struct {
-	Currency         string            `json:"currency"`
-	Name             string            `json:"name"`
-	WithdrawNetworks []withdrawNetwork `json:"withdraw_networks"`
-	ConversionRates  map[string]string `json:"conversion_rates"`
+	Currency         string             `json:"currency"`
+	Name             string             `json:"name"`
+	WithdrawNetworks []withdrawNetwork  `json:"withdraw_networks"`
+	ConversionRates  map[string]float64 `json:"conversion_rates"`
 }
 
 // AllRates returns all possible exchange rates using /trades/allRates endpoint.
@@ -62,7 +63,7 @@ func (c *Client) RatesInDirection(ctx context.Context, direction string) (*Rate,
 	return rate, nil
 }
 
-type limits struct {
+type Limits struct {
 	MinAmount float64 `json:"min_amount"`
 	MaxAmount float64 `json:"max_amount"`
 }
@@ -74,7 +75,7 @@ type commission struct {
 type PayInDestination struct {
 	Currency string `json:"currency"`
 	Network  string `json:"network"`
-	Limit    limits `json:"limit"`
+	Limit    Limits `json:"limit"`
 }
 
 type PayOutDestination struct {
@@ -104,6 +105,28 @@ func (c *Client) DestinationsList(ctx context.Context) (*DestinationsList, error
 		return nil, err
 	}
 	return destinations, nil
+}
+
+// GetCurrencyLimits returns the limits for the selected currency for sending or withdrawing depending on the payIn value, respectively.
+func (c *Client) GetCurrencyLimits(ctx context.Context, currency string, network string, payIn bool) (*Limits, error) {
+	destinationsList, err := c.DestinationsList(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if payIn {
+		for _, currencyData := range destinationsList.PayIn {
+			if currencyData.Currency == currency && currencyData.Network == network {
+				return &currencyData.Limit, nil
+			}
+		}
+	} else {
+		for _, currencyData := range destinationsList.PayOut {
+			if currencyData.Currency == currency && currencyData.Network == network {
+				return &currencyData.Limit, nil
+			}
+		}
+	}
+	return nil, errorz.CurrencyNotFound
 }
 
 // CreateTrade is a structure that represents /trades/createTrade request body.
