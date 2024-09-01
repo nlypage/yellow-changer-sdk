@@ -177,16 +177,16 @@ type Trade struct {
 	4 - canceled.
 	5 - AML block.
 	*/
-	Status            int    `json:"status"`
-	PaymentWallet     string `json:"payment_wallet"`
-	UserPaidHash      string `json:"userPaidHash"`
-	OurHash           string `json:"ourHash"`
-	GetCreds          string `json:"get_creds"`
-	NetworkCommission int    `json:"network_commission"`
-	Date              int    `json:"date"`
-	TimeExpire        int    `json:"time_expire"`
-	SendValue         string `json:"send_value"`
-	GetValue          string `json:"get_value"`
+	Status            int     `json:"status"`
+	PaymentWallet     string  `json:"payment_wallet"`
+	UserPaidHash      string  `json:"userPaidHash"`
+	OurHash           string  `json:"ourHash"`
+	GetCreds          string  `json:"get_creds"`
+	NetworkCommission int     `json:"network_commission"`
+	Date              int     `json:"date"`
+	TimeExpire        int     `json:"time_expire"`
+	SendValue         float64 `json:"send_value"`
+	GetValue          float64 `json:"get_value"`
 }
 
 // CreateTrade creates new trade and returns trade info using /trades/createTrade endpoint.
