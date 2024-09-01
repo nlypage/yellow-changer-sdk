@@ -233,6 +233,7 @@ func (c *Client) GetInfo(ctx context.Context, uniqID string) (*Trade, error) {
 	return trade, nil
 }
 
+// ValidateWallet validates address for a given network using regex.
 func (c *Client) ValidateWallet(address, network string) (bool, error) {
 	var pattern string
 
