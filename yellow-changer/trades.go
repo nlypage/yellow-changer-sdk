@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/nlypage/yellow-changer-sdk/yellow-changer/common/errorz"
 	"net/http"
+	"regexp"
 )
 
 type withdrawNetwork struct {
@@ -230,4 +231,44 @@ func (c *Client) GetInfo(ctx context.Context, uniqID string) (*Trade, error) {
 		return nil, err
 	}
 	return trade, nil
+}
+
+func (c *Client) ValidateWallet(address, network string) (bool, error) {
+	var pattern string
+
+	switch network {
+	case "ERC20", "BEP20", "ARBITRUM", "MATIC", "POLYGON":
+		pattern = `^(0x)[0-9A-Fa-f]{40}$`
+	case "AVAX":
+		pattern = `^(X-avax)[0-9A-za-z]{39}$`
+	case "XMR":
+		pattern = `^[48][a-zA-Z\d]{94}([a-zA-Z\d]{11})?$`
+	case "TON":
+		pattern = `^[UE][Qf][0-9a-zA-Z\-\_]{46}$`
+	case "SOL":
+		pattern = `^[1-9A-HJ-NP-Za-km-z]{32,44}$`
+	case "DOGE":
+		pattern = `^(D|A|9)[a-km-zA-HJ-NP-Z1-9]{33,34}$`
+	case "BTC":
+		pattern = `^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$|^((bc1q)|(bc1p))[0-9A-Za-z]{37,62}$`
+	case "TRC20":
+		pattern = `^T[1-9A-HJ-NP-Za-km-z]{33}$`
+	case "LTC":
+		pattern = `^(L|M)[A-Za-z0-9]{33}$|^(ltc1)[0-9A-Za-z]{39}$`
+	case "BCH":
+		pattern = `^[1][a-km-zA-HJ-NP-Z1-9]{25,34}$|^[0-9a-z]{42}$`
+	case "DASH":
+		pattern = `^[X|7][0-9A-Za-z]{33}$`
+	default:
+		return false, errorz.InvalidNetwork
+	}
+
+	match, err := regexp.MatchString(pattern, address)
+	if err != nil {
+		return false, err
+	}
+	if !match {
+		return false, errorz.InvalidAddress
+	}
+	return true, nil
 }
