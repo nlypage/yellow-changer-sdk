@@ -182,7 +182,7 @@ type Trade struct {
 	UserPaidHash      string  `json:"userPaidHash"`
 	OurHash           string  `json:"ourHash"`
 	GetCreds          string  `json:"get_creds"`
-	NetworkCommission int     `json:"network_commission"`
+	NetworkCommission float64 `json:"network_commission"`
 	Date              int     `json:"date"`
 	TimeExpire        int     `json:"time_expire"`
 	SendValue         float64 `json:"send_value"`
