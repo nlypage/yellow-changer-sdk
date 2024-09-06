@@ -234,10 +234,9 @@ func (c *Client) GetInfo(ctx context.Context, uniqID string) (*Trade, error) {
 }
 
 // ValidateWallet validates address for a given network using regex.
-func (c *Client) ValidateWallet(address, network string) (bool, error) {
+func (c *Client) ValidateWallet(address, network string, currency string) (bool, error) {
 	var pattern string
 
-	// add SBERPAY network, validate is a bank card
 	switch network {
 	case "ERC20", "BEP20", "ARBITRUM", "MATIC", "POLYGON":
 		pattern = `^(0x)[0-9A-Fa-f]{40}$`
@@ -261,10 +260,13 @@ func (c *Client) ValidateWallet(address, network string) (bool, error) {
 		pattern = `^[1][a-km-zA-HJ-NP-Z1-9]{25,34}$|^[0-9a-z]{42}$`
 	case "DASH":
 		pattern = `^[X|7][0-9A-Za-z]{33}$`
-	case "SBPRUB":
-		pattern = `^(\+7|7|8)[0-9]{10}$`
-	case "SBERRUB":
-		pattern = `^[0-9]{16}$`
+	case "RUB":
+		switch currency {
+		case "SBPRUB":
+			pattern = `^(\+7|7|8)[0-9]{10}$`
+		case "SBERRUB":
+			pattern = `^[0-9]{16}$`
+		}
 
 	default:
 		return false, errorz.InvalidNetwork
